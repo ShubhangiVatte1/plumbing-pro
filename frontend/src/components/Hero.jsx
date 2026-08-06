@@ -45,6 +45,7 @@ export default function Hero() {
         <button onClick={() => navigate("/booking")}>
           Book Service
         </button>
+         
       </div>
 
       <div className="right">

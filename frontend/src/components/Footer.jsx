@@ -8,13 +8,13 @@ return(
 
 <p>
 
-📞 +1 234 567 890
+📞 +91 9495969927 
 
 </p>
 
 <p>
 
-📧 info@plumbingpro.com
+📧 kundleshwarmel3@gmail.com
 
 </p>
 
