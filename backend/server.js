@@ -235,7 +235,7 @@ const Razorpay = require("razorpay");
 const nodemailer = require("nodemailer");
 const multer = require("multer");
 const path = require("path");
-
+const PORT = process.env.PORT || 5000;
 const app = express();
 
 /* ================== DEBUG ENV ================== */
@@ -409,6 +409,6 @@ app.delete("/api/leads/:id", async (req, res) => {
 });
 
 /* ================== SERVER ================== */
-app.listen(5000, () => {
-  console.log("🚀 Server running on http://localhost:5000");
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
 });
