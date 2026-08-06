@@ -4,7 +4,7 @@ return(
 
 <footer>
 
-<h3>PlumbingPro</h3>
+<h3>Plumbex</h3>
 
 <p>
 
@@ -17,6 +17,9 @@ return(
 📧 kundleshwarmel3@gmail.com
 
 </p>
+<p>📍 Patrya,Maruti chowk,</p>
+<p>near Mankar wada,Narayan peth,</p>
+<p>pune,maharashtra 411030</p>
 
 <p>
 

@@ -48,7 +48,7 @@ import React from "react";
 export default function Navbar() {
   return (
     <nav className="navbar">
-      <h2>🔧 PlumbingPro</h2>
+      <h2>🔧 Plumbex</h2>
 
       <ul>
         <li><a href="#home">Home</a></li>

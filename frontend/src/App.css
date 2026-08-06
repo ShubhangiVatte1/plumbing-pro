@@ -668,3 +668,41 @@ button:hover {
   margin-top: 5px;
   font-weight: bold;
 }
+.testimonials {
+  padding: 50px;
+  text-align: center;
+}
+
+.review-form {
+  max-width: 400px;
+  margin: auto;
+  margin-bottom: 30px;
+}
+
+.review-form input,
+.review-form textarea {
+  width: 100%;
+  padding: 10px;
+  margin: 8px 0;
+}
+
+.review-form button {
+  padding: 10px 20px;
+  background: green;
+  color: white;
+  border: none;
+}
+
+.review-container {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.review-card {
+  background: #f3f3f3;
+  padding: 20px;
+  width: 250px;
+  border-radius: 10px;
+}
