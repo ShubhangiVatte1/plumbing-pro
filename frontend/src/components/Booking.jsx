@@ -320,80 +320,73 @@ export default function Booking() {
   };
 
   /* ================== 🚀 SUBMIT ================== */
-  const handleSubmit = async (e) => {
-    e.preventDefault();
 
-    if (form.phone.length !== 10) {
-      alert("Enter valid phone number");
+const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  if (form.phone.length !== 10) {
+    alert("Enter valid phone number");
+    return;
+  }
+
+  if (!form.latitude) {
+    alert("Please capture location first 📍");
+    return;
+  }
+
+  setLoading(true);
+
+  try {
+    /* ✅ 1. LOAD RAZORPAY FIRST */
+    const isLoaded = await loadRazorpay();
+    if (!isLoaded) {
+      alert("Razorpay SDK failed to load");
+      setLoading(false);
       return;
     }
 
-    if (!form.latitude) {
-      alert("Please capture location first 📍");
+    /* ✅ 2. CREATE ORDER FAST */
+    const orderRes = await fetch(`${API}/create-order`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ amount: 500 })
+    });
+
+    const orderData = await orderRes.json();
+
+    if (!orderData || !orderData.id) {
+      alert("Order creation failed ❌");
+      setLoading(false);
       return;
     }
 
-    setLoading(true);
+    /* ✅ 3. OPEN RAZORPAY IMMEDIATELY */
+    const options = {
+      key: "rzp_test_TLGDRJzAFuwR02",
+      amount: orderData.amount,
+      currency: "INR",
+      name: "Plumbing Service",
+      description: "Booking Payment",
+      order_id: orderData.id,
 
-    try {
-      /* ✅ 1. SAVE BOOKING */
-      const res = await fetch(`${API}/api/contact`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(form)
-      });
+      handler: async function (response) {
+        console.log("Payment Success:", response);
 
-      const data = await res.json();
+        /* ✅ 4. SAVE BOOKING AFTER PAYMENT (BACKGROUND) */
+        try {
+          const res = await fetch(`${API}/api/contact`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify(form)
+          });
 
-      if (!data.success) {
-        alert("Booking failed");
-        setLoading(false);
-        return;
-      }
+          const data = await res.json();
+          const leadId = data.leadId;
 
-      const leadId = data.leadId;
-
-      /* ✅ 2. LOAD RAZORPAY */
-      const isLoaded = await loadRazorpay();
-      if (!isLoaded) {
-        alert("Razorpay SDK failed to load");
-        setLoading(false);
-        return;
-      }
-
-      /* ✅ 3. CREATE ORDER */
-      const orderRes = await fetch(`${API}/create-order`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ amount: 500 })
-      });
-
-      const orderData = await orderRes.json();
-
-      if (!orderData || !orderData.id) {
-        alert("Order creation failed ❌");
-        setLoading(false);
-        return;
-      }
-
-      /* ✅ 4. OPEN RAZORPAY */
-      const options = {
-        key: "rzp_test_TLGDRJzAFuwR02",
-
-        amount: orderData.amount,
-        currency: "INR",
-        name: "Plumbing Service",
-        description: "Booking Payment",
-        order_id: orderData.id,
-
-        handler: async function (response) {
-          console.log("Payment Success:", response);
-
-          /* ✅ 5. SAVE PAYMENT SUCCESS */
           await fetch(`${API}/api/payment-success`, {
             method: "POST",
             headers: {
@@ -405,39 +398,37 @@ export default function Booking() {
             })
           });
 
-          localStorage.setItem("bookingData", JSON.stringify(form));
-
-          alert("Payment Successful ✅");
-
-          navigate("/thank-you");
-        },
-
-        prefill: {
-          name: form.name,
-          email: form.email,
-          contact: form.phone
-        },
-
-        notes: {
-          address: form.address
-        },
-
-        theme: {
-          color: "#3399cc"
+        } catch (err) {
+          console.log("Background save failed:", err);
         }
-      };
 
-      const paymentObject = new window.Razorpay(options);
-      paymentObject.open();
+        localStorage.setItem("bookingData", JSON.stringify(form));
 
-    } catch (error) {
-      console.log(error);
-      alert("Something went wrong ❌");
-    } finally {
-      setLoading(false);
-    }
-  };
+        alert("Payment Successful ✅");
+        navigate("/thank-you");
+      },
 
+      prefill: {
+        name: form.name,
+        email: form.email,
+        contact: form.phone
+      },
+
+      theme: {
+        color: "#3399cc"
+      }
+    };
+
+    const paymentObject = new window.Razorpay(options);
+    paymentObject.open();
+
+  } catch (error) {
+    console.log(error);
+    alert("Something went wrong ❌");
+  } finally {
+    setLoading(false);
+  }
+};
   return (
     <section className="booking-container">
       <div className="booking-card">
